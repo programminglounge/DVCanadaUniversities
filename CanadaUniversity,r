@@ -13,7 +13,7 @@ i = 0;
 for (val in data$name)
 {
   i = i+1
-  res2 <- GET(paste("https://nminatim.openstreetmap.org/search/", toString(val), "?format=json"))
+  res2 <- GET(paste("https://nominatim.openstreetmap.org/search/", toString(val), "?format=json"))
   data2 <-fromJSON(rawTOChar(res2$content))
   if (!is.null(data2$lat))
   {
