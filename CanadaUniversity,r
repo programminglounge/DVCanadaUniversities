@@ -1,0 +1,31 @@
+library(leaflet)
+library(httr)
+library(jsonlite)
+
+country <- readline(prompt="Enter country:")
+country_provided <- paste("http://universities.hipolabs.com/search?country=", toString(country), sep = "")
+res <- GET(country_provided)
+data = fromJSON(rawToChar(res$content))
+lac = c()
+lon = c()
+name = c()
+i = 0;
+for (val in data$name)
+{
+  i = i+1
+  res2 <- GET(paste("https://nminatim.openstreetmap.org/search/", toString(val), "?format=json"))
+  data2 <-fromJSON(rawTOChar(res2$content))
+  if (!is.null(data2$lat))
+  {
+    latitude = as.numeric(data2$lat)
+    longitude = as.numeric(data2$lon)
+    lat <-append(lat, latitude)
+    lon <-append(lon, longitude)
+    name <- append (name, data2$display_name)
+    if (i == 5)  // put this here just so that the loop doesn't take too long and can show the result on leaflet
+      break
+  }
+}
+m <- leaflet() %>% setView(lng = -98, lat = 65, zoom = 4) 
+#currently the map is focused on canada however will plan to change this and make it more universal for all countries
+m %>% addTiles() %>% addMarkers(lon, lat, popup = name)
